@@ -62,7 +62,10 @@ module vscale_verilator_top(
       if (!reset) begin
          if (htif_pcr_resp_valid && htif_pcr_resp_data != 0) begin
             if (htif_pcr_resp_data == 1) begin
+               $display( "*** FINISHED *** after %d simulation cycles", trace_count);
                $finish;
+            end else if (htif_pcr_resp_data[7:0] == 255) begin
+               $write("%c", htif_pcr_resp_data[15:8]);
             end else begin
                $sformat(reason, "tohost = %d", htif_pcr_resp_data >> 1);
             end
