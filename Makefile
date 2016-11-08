@@ -27,6 +27,7 @@ VERILATOR_OPTS = \
 	-Wno-fatal \
 	--Mdir sim \
 	--trace \
+	-CFLAGS "-std=c++14"
 
 VERILATOR_MAKE_OPTS = OPT_FAST="-O3"
 

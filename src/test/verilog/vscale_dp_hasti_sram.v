@@ -30,7 +30,7 @@ module vscale_dp_hasti_sram(
    parameter nwords = 65536;
 
 
-   reg [`HASTI_BUS_WIDTH-1:0]                              mem [nwords-1:0];
+   reg [`HASTI_BUS_WIDTH-1:0]                              mem [nwords-1:0] /*verilator public*/;
 
    // p0
    reg [`HASTI_ADDR_WIDTH-1:0]                             p0_reg_addr;

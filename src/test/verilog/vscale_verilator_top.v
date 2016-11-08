@@ -12,7 +12,7 @@ module vscale_verilator_top(
    wire [`HTIF_PCR_WIDTH-1:0] htif_pcr_resp_data;
 
    reg [  63:0]               max_cycles;
-   reg [  63:0]               trace_count;
+   reg [  63:0]               trace_count /*verilator public*/;
    reg [255:0]                reason;
    reg [1023:0]               loadmem;
    integer                    stderr = 32'h80000002;
@@ -37,7 +37,7 @@ module vscale_verilator_top(
    integer i = 0;
    integer j = 0;
    integer tmp = 0;
-   
+
    initial begin
       loadmem = 0;
       reason = 0;
@@ -56,26 +56,11 @@ module vscale_verilator_top(
    always @(posedge clk) begin
       trace_count = trace_count + 1;
       // $display("Current: %d, max: %d\n", trace_count, max_cycles);
-      if (max_cycles > 0 && trace_count > max_cycles)
+      if (max_cycles > 0 && trace_count > max_cycles) begin
         reason = "timeout";
 
-      if (!reset) begin
-         if (htif_pcr_resp_valid && htif_pcr_resp_data != 0) begin
-            if (htif_pcr_resp_data == 1) begin
-               $display( "*** FINISHED *** after %d simulation cycles", trace_count);
-               $finish;
-            end else if (htif_pcr_resp_data[7:0] == 255) begin
-               $write("%c", htif_pcr_resp_data[15:8]);
-            end else begin
-               $sformat(reason, "tohost = %d", htif_pcr_resp_data >> 1);
-            end
-         end
-      end
-
-
-      if (reason) begin
-         $fdisplay(stderr, "*** FAILED *** (%s) after %d simulation cycles", reason, trace_count);
-         $finish;
+        $fdisplay(stderr, "*** FAILED *** (%s) after %d simulation cycles", reason, trace_count);
+        $finish;
       end
    end
 

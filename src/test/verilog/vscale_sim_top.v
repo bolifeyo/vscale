@@ -5,14 +5,14 @@
 module vscale_sim_top(
                       input                        clk,
                       input                        reset,
-                      input                        htif_pcr_req_valid,
-                      output                       htif_pcr_req_ready,
-                      input                        htif_pcr_req_rw,
-                      input [`CSR_ADDR_WIDTH-1:0]  htif_pcr_req_addr,
-                      input [`HTIF_PCR_WIDTH-1:0]  htif_pcr_req_data,
-                      output                       htif_pcr_resp_valid,
-                      input                        htif_pcr_resp_ready,
-                      output [`HTIF_PCR_WIDTH-1:0] htif_pcr_resp_data
+                      input                        htif_pcr_req_valid  /*verilator public*/,
+                      output                       htif_pcr_req_ready  /*verilator public*/,
+                      input                        htif_pcr_req_rw     /*verilator public*/,
+                      input [`CSR_ADDR_WIDTH-1:0]  htif_pcr_req_addr   /*verilator public*/,
+                      input [`HTIF_PCR_WIDTH-1:0]  htif_pcr_req_data   /*verilator public*/,
+                      output                       htif_pcr_resp_valid /*verilator public*/,
+                      input                        htif_pcr_resp_ready /*verilator public*/,
+                      output [`HTIF_PCR_WIDTH-1:0] htif_pcr_resp_data  /*verilator public*/
                       );
 
    wire                                            resetn;
