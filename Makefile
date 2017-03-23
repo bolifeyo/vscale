@@ -65,7 +65,7 @@ vscale_dp_hasti_sram.v \
 
 VCS_TOP = $(V_TEST_DIR)/vscale_hex_tb.v
 
-VERILATOR_CPP_TB = $(CXX_TEST_DIR)/vscale_hex_tb.cpp
+VERILATOR_CPP_TB = $(CXX_TEST_DIR)/vscale_verilator_main.cpp
 
 VERILATOR_TOP = $(V_TEST_DIR)/vscale_verilator_top.v
 
