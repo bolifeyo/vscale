@@ -67,8 +67,6 @@ VCS_TOP = $(V_TEST_DIR)/vscale_hex_tb.v
 
 VERILATOR_CPP_TB = $(CXX_TEST_DIR)/vscale_verilator_main.cpp
 
-VERILATOR_TOP = $(V_TEST_DIR)/vscale_verilator_top.v
-
 HDRS = $(addprefix $(V_SRC_DIR)/, \
 vscale_ctrl_constants.vh \
 rv32_opcodes.vh \
@@ -86,26 +84,25 @@ default: $(SIM_DIR)/simv
 
 run-asm-tests: $(TEST_VPD_FILES)
 
-verilator-sim: $(SIM_DIR)/Vvscale_verilator_top
+verilator-sim: $(SIM_DIR)/vscale
 
-verilator-run-asm-tests: $(VERILATOR_VCD_FILES)
+verilator-run-asm-tests: $(SIM_DIR)/vscale $(VERILATOR_VCD_FILES)
 
 $(OUT_DIR)/%.vpd: $(MEM_DIR)/%.hex $(SIM_DIR)/simv
 	mkdir -p output
 	$(SIM_DIR)/simv $(SIMV_OPTS) +max-cycles=$(MAX_CYCLES) +loadmem=$< +vpdfile=$@ && [ $$PIPESTATUS -eq 0 ]
 
-$(OUT_DIR)/%.verilator.vcd: $(MEM_DIR)/%.hex $(SIM_DIR)/Vvscale_verilator_top
+$(OUT_DIR)/%.verilator.vcd: $(MEM_DIR)/%.hex $(SIM_DIR)/vscale
 	mkdir -p output
-	$(SIM_DIR)/Vvscale_verilator_top +max-cycles=$(MAX_CYCLES) +loadmem=$< --vcdfile=$@ && [ $$PIPESTATUS -eq 0 ]
+	$(SIM_DIR)/vscale --max-cycles=$(MAX_CYCLES) --loadmem=$< --vcdfile=$@ && [ $$PIPESTATUS -eq 0 ]
 
 $(SIM_DIR)/simv: $(VCS_TOP) $(SIM_SRCS) $(DESIGN_SRCS) $(HDRS)
 	mkdir -p sim
 	$(VCS) $(VCS_OPTS) -o $@ $(VCS_TOP) $(SIM_SRCS) $(DESIGN_SRCS)
 
-$(SIM_DIR)/Vvscale_verilator_top: $(VERILATOR_TOP) $(SIM_SRCS) $(DESIGN_SRCS) $(HDRS) $(VERILATOR_CPP_TB)
-	$(VERILATOR) $(VERILATOR_OPTS) $(VERILATOR_TOP) $(SIM_SRCS) $(DESIGN_SRCS) --exe ../$(VERILATOR_CPP_TB)
-	cd sim; make $(VERILATOR_MAKE_OPTS) -f Vvscale_verilator_top.mk Vvscale_verilator_top__ALL.a
-	cd sim; make $(VERILATOR_MAKE_OPTS) -f Vvscale_verilator_top.mk Vvscale_verilator_top
+$(SIM_DIR)/vscale: $(SIM_SRCS) $(DESIGN_SRCS) $(HDRS) $(VERILATOR_CPP_TB)
+	mkdir -p sim
+	cd sim; cmake  -DCMAKE_BUILD_TYPE=Release ..; make
 
 clean:
 	rm -rf $(SIM_DIR)/* $(OUT_DIR)/*

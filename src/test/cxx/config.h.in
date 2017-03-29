@@ -1,0 +1,16 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#define VERSION_MAJOR @VERSION_MAJOR@
+#define VERSION_MINOR @VERSION_MINOR@
+#define VERSION_PATCH @VERSION_PATCH@
+
+#define GIT_HASH_STR "@GIT_SHORT_HASH@"
+#define VERSION_STR  "@VERSION_FULL@"
+
+#cmakedefine RELEASE
+#cmakedefine GIT_MODIFIED
+
+#define TOP_VAR_NAME @VERILATOR_TOP_VAR_NAME@
+
+#endif // CONFIG_H
