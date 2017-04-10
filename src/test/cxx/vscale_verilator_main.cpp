@@ -136,9 +136,11 @@ int main( int argc, char **argv )
   Htif htif( htif_req_valid, htif_req_ready, htif_req_rw, htif_req_addr,
              htif_req_data, htif_resp_valid, htif_resp_ready, htif_resp_data );
   verilator_top->eval(); // initialize the simulator
+  int retVal = 0;
   for( uint64_t cycle = 0; !Verilated::gotFinish(); ++cycle ) {
     if( cli.maxCycles > 0 && cycle >= cli.maxCycles ) {
       fmt::print( stderr, "*** FAILED *** (timeout) after {} cycles\n", cycle );
+      retVal = -1;
       break;
     }
 
@@ -160,5 +162,5 @@ int main( int argc, char **argv )
   }
   if( generateVcd ) tfp->close();
 
-  return htif.get_return_value();
+  return retVal ? retVal : htif.get_return_value();
 }
