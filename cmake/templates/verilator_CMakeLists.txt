@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.5.0)
+
+project(verilator_project)
+
+set(MODE_SC 0)
+if(VERILATOR_MODE STREQUAL "sc")
+  set(MODE_SC 1)
+endif()
+
+file(GLOB CPP_SOURCES "*.cpp")
+add_library("${VERILATOR_LIBNAME}" ${CPP_SOURCES})
+target_include_directories("${VERILATOR_LIBNAME}" PUBLIC "${VERILATOR_ROOT}/include"
+                                        "${VERILATOR_ROOT}/include/vltstd")
+target_compile_definitions("${VERILATOR_LIBNAME}" PUBLIC "VL_PRINTF=printf"
+                                        "VM_COVERAGE=$<BOOL:${VERILATOR_COVERAGE}>"
+                                        "VM_SC=$<BOOL:${MODE_SC}>"
+                                        "VM_TRACE=$<BOOL:${VERILATOR_TRACE}>"
+)
