@@ -11,6 +11,4 @@
 #cmakedefine RELEASE
 #cmakedefine GIT_MODIFIED
 
-#define TOP_VAR_NAME @VERILATOR_TOP_VAR_NAME@
-
 #endif // CONFIG_H

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.10.0)
 
 project(vscale)
 set(VERSION_MAJOR "0")
@@ -18,31 +18,27 @@ include(messages)                    # helper functions for messages
 include(versionSupport)              # build up version strings
 include(testing)                     # enables ctest and generates suite and check
 include(clangformat)                 # adds clang-format as format target
-include(verilator)
+
+find_package(verilator REQUIRED HINTS $ENV{VERILATOR_ROOT})
 
 add_subdirectory(external)
-
-# define verilog source files, the top module, and 
-file(GLOB_RECURSE VERILOG_SOURCES "src/*.v" "src/*.vh")
-list(REMOVE_ITEM VERILOG_SOURCES "${PROJECT_SOURCE_DIR}/src/test/verilog/vscale_hex_tb.v")
-set(TOP_MODULE_NAME vscale_sim_top)
-verilator_add_library(vscale_verilog ${TOP_MODULE_NAME} TRACE INCLUDES "src/main/verilog" SOURCES ${VERILOG_SOURCES})
-
-# Old versions (<3.882) of verilator named the top level module "v".
-# Newer versions (>=3.884) use the top module name as default and additionally
-# provide the "--l2-name" command line option to customize the name.
-# To support both versions for now the name is given to the program as a
-# define in "config.h".
-set(VERILATOR_TOP_VAR_NAME "v")
-if(VERILATOR_VERSION VERSION_GREATER "3.882")
-  set(VERILATOR_TOP_VAR_NAME ${TOP_MODULE_NAME})
-endif()
 
 configure_file("src/test/cxx/config.h.in" "config.h" @ONLY)
 file(GLOB_RECURSE CPP_SOURCES "src/test/cxx/*.cpp")
 add_executable(vscale ${CPP_SOURCES})
 target_include_directories(vscale PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
-target_link_libraries(vscale vscale_verilog cxxopts elfio fmt spdlog)
+target_link_libraries(vscale PRIVATE cxxopts elfio fmt spdlog)
+
+# define verilog source files, the top module, and add them to the executable
+file(GLOB_RECURSE VERILOG_SOURCES "src/*.v" "src/*.vh")
+list(REMOVE_ITEM VERILOG_SOURCES "${PROJECT_SOURCE_DIR}/src/test/verilog/vscale_hex_tb.v")
+verilate(vscale TRACE
+         TOP_MODULE vscale_sim_top
+         PREFIX Vvscale_sim_top
+         SOURCES ${VERILOG_SOURCES}
+         INCLUDE_DIRS "src/main/verilog"
+         VERILATOR_ARGS -Wno-fatal
+)
 
 # register c++ files for reformatting
 file(GLOB H_SOURCES "src/test/cxx/*.h")

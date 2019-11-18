@@ -1,8 +1,9 @@
+#include <verilated.h>
+#include <verilated_vcd_c.h>
+
 #include "Vvscale_sim_top.h"
 #include "Vvscale_sim_top_vscale_dp_hasti_sram.h"
 #include "Vvscale_sim_top_vscale_sim_top.h"
-#include "verilated.h"
-#include "verilated_vcd_c.h"
 
 #include "cli.h"
 #include "config.h"
@@ -51,8 +52,8 @@ int main( int argc, char **argv )
   auto &htif_resp_ready = verilator_top->htif_pcr_resp_ready;
   auto &htif_resp_data = verilator_top->htif_pcr_resp_data;
 
-  uint32_t *memoryStart = verilator_top->TOP_VAR_NAME->hasti_mem->mem;
-  size_t memorySize = sizeof( verilator_top->TOP_VAR_NAME->hasti_mem->mem );
+  uint32_t *memoryStart = verilator_top->vscale_sim_top->hasti_mem->mem;
+  size_t memorySize = sizeof( verilator_top->vscale_sim_top->hasti_mem->mem );
 
   // load program into memory
   auto elf = make_unique<ELFIO::elfio>();
